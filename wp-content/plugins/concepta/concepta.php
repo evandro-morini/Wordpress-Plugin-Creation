@@ -106,36 +106,42 @@ function postHandler()
         $token = new Token();
         $ticket = new Ticket($token->getToken(), $token->getAuth(), $strBody);
         $response = $ticket->getResponse();
-        ?>
-
+        //echo '<pre>';print_r($response);echo '</pre>';
+        
+        $numOfCols = 3;
+        $rowCount = 0;
+        $bootstrapColWidth = 12 / $numOfCols;
+?>
+    <div class="container">
         <div class="row">
-            <table class="table">
-                <thead>
-                    <th scope="col">Available Token</th>
-                    <th scope="col">etc</th>
-                    <th scope="col">etc</th>
-                    <th scope="col">etc</th>
-                </thead>
-                <tbody>
-                    <?php if(empty(count($response))) : ?>
-                        <tr><td colspan="5">No result found!</td></tr>
-                    <?php else: ?>
-                        <?php foreach($response->TicketInfo as $r) : ?>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+            <?php foreach ($response as $row) : ?>
+                <?php 
+                    foreach($row['TicketInfo']['ImageList'] as $img) {
+                        if($img['Type'] === 'S') {
+                            $imgSrc = $img['Url'];
+                            break;
+                        }
+                    }
+                ?>
+                <div class="col-md-<?= $bootstrapColWidth; ?>">
+                    <div class="card mb-<?= $bootstrapColWidth; ?> box-shadow">
+                        <img class="card-img-top" data-src="<?= $imgSrc; ?>" src="<?= $imgSrc; ?>" style="height: 225px; width: 100%; display: block;">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <?=$row['TicketInfo']['Name'];?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php
+                $rowCount++;
+                if($rowCount % $numOfCols == 0) 
+                    echo '</div><div class="row">';
+                endforeach;
+            ?>
         </div>
-
-        <?php echo '<pre>';print_r($ticket);echo '</pre>';
-
+    </div>
+    <?php
     }
 }
 add_action( 'template_redirect', 'postHandler' );

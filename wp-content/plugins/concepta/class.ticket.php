@@ -23,10 +23,10 @@ class Ticket {
         $response = curl_exec($curl);
         curl_close($curl);
 
-        $obj = json_decode($response);
+        $obj = json_decode($response, true);
 
         if(!empty($obj)) {
-            $this->setResponse($obj->Result);
+            $this->setResponse($obj['Result']);
         }
     }
     
